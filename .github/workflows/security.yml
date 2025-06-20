@@ -14,12 +14,14 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v2
 
-    - name: Run Semgrep SAST
+    - name: Run Semgrep (SAST)
       uses: returntocorp/semgrep-action@v1
       with:
         config: 'p/default'
 
-    - name: Run OWASP ZAP (DAST)
-      uses: zaproxy/action-baseline@v0.6.0
-      with:
-        target: 'https://juice-shop.herokuapp.com'
+    - name: Run OWASP ZAP Baseline (DAST)
+      run: |
+        docker run -v $(pwd):/zap/wrk/:rw ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+          -t https://juice-shop.herokuapp.com \
+          -r zap-report.html \
+          -x zap-report.xml
