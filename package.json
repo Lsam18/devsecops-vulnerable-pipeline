@@ -1,0 +1,12 @@
+{
+  "name": "devsecops-vulnerable-pipeline",
+  "version": "1.0.0",
+  "description": "Dummy app for CI/CD security pipeline",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^8.0.0"
+  }
+}
