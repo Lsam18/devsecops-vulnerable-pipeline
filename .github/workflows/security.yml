@@ -9,6 +9,9 @@ on:
 jobs:
   security-scan:
     runs-on: ubuntu-22.04
+    container:
+      image: owasp/zap2docker-stable:latest
+      options: --user root
 
     steps:
       - name: Checkout code
@@ -35,6 +38,7 @@ jobs:
         with:
           target: 'https://juice-shop.herokuapp.com'
           fail_action: false
+          docker_name: 'owasp/zap2docker-stable:latest'  # Explicitly specify the image with tag
 
       - name: Upload ZAP HTML Report
         uses: actions/upload-artifact@v4
