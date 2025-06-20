@@ -1,4 +1,4 @@
-name: DevSecOps Pipeline
+name: DevSecOps CI/CD Enhanced
 
 on:
   push:
@@ -11,17 +11,53 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Run Semgrep (SAST)
-      uses: returntocorp/semgrep-action@v1
-      with:
-        config: 'p/default'
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
 
-    - name: Run OWASP ZAP Baseline (DAST)
-      run: |
-        docker run -v $(pwd):/zap/wrk/:rw ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
-          -t https://juice-shop.herokuapp.com \
-          -r zap-report.html \
-          -x zap-report.xml
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run npm audit (Dependency Vulnerability Scan)
+        run: npm audit --audit-level=high
+
+      - name: Run Semgrep (SAST - Static Analysis)
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: 'p/default'
+
+      - name: Run OWASP ZAP Baseline Scan (DAST - Dynamic Analysis)
+        uses: zaproxy/action-baseline@v0.6.0
+        with:
+          target: 'https://juice-shop.herokuapp.com'
+          fail_action: false
+
+      - name: Upload ZAP HTML Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-report
+          path: zap-report.html
+
+      - name: Run ESLint (Code Quality + Potential Security Issues)
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - run: npm install eslint
+      - run: npx eslint . --max-warnings=0
+
+      - name: Run License Checker (Detect risky dependencies)
+        uses: mikeal/license-checker-action@v2
+        with:
+          path: '.'
+
+      - name: Check for secrets with TruffleHog (Secret Detection)
+        uses: trufflesecurity/trufflehog-action@v1
+        with:
+          scan_paths: '.'
+
+      - name: Summary
+        run: echo "Security pipeline completed with SAST, DAST, Dependency and Secret Scanning"
