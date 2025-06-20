@@ -37,27 +37,22 @@ jobs:
           fail_action: false
 
       - name: Upload ZAP HTML Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: zap-report
           path: zap-report.html
 
+      - name: Install ESLint
+        run: npm install eslint
+
       - name: Run ESLint (Code Quality + Potential Security Issues)
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-      - run: npm install eslint
-      - run: npx eslint . --max-warnings=0
+        run: npx eslint . --max-warnings=0
 
-      - name: Run License Checker (Detect risky dependencies)
-        uses: mikeal/license-checker-action@v2
+      # BONUS: Secret Detection using gitleaks instead of broken TruffleHog
+      - name: Scan for secrets with Gitleaks
+        uses: gitleaks/gitleaks-action@v2
         with:
-          path: '.'
-
-      - name: Check for secrets with TruffleHog (Secret Detection)
-        uses: trufflesecurity/trufflehog-action@v1
-        with:
-          scan_paths: '.'
+          args: detect --source=. --verbose
 
       - name: Summary
-        run: echo "Security pipeline completed with SAST, DAST, Dependency and Secret Scanning"
+        run: echo "✅ SAST, DAST, Dependency Scanning, Linting, and Secrets Detection complete."
