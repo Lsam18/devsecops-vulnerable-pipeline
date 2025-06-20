@@ -80,7 +80,7 @@ Contributions, improvements, and suggestions are welcome! Feel free to open issu
 
 For any questions or feedback, reach out to me at:
 
-**LAKSHAN SAMEER** — [lakshan.sam28@gmail.com] — [GitHub Profile](https://github.com/Lsam18)
+**LAKSHAN SAMEER** — lakshan.sam28@gmail.com — [GitHub Profile](https://github.com/Lsam18)
 
 ---
 
