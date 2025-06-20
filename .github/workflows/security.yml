@@ -30,17 +30,7 @@ jobs:
         with:
           config: 'p/default'
 
-      - name: Run OWASP ZAP Baseline Scan (DAST - Dynamic Analysis)
-        uses: zaproxy/action-baseline@v0.6.0
-        with:
-          target: 'https://juice-shop.herokuapp.com'
-          fail_action: false
-
-      - name: Upload ZAP HTML Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: zap-report
-          path: zap-report.html
+      # ZAP step removed due to Docker Hub image access issues
 
       - name: Install ESLint
         run: npm install eslint
@@ -54,4 +44,4 @@ jobs:
           args: detect --source=. --verbose
 
       - name: Summary
-        run: echo "✅ SAST, DAST, Dependency Scanning, Linting, and Secrets Detection complete."
+        run: echo "✅ SAST, Dependency Scanning, Linting, and Secrets Detection complete."
