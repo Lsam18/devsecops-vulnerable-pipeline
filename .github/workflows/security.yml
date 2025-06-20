@@ -11,57 +11,47 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      # Checkout source code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Setup Node.js environment
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      # Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # Dependency Vulnerability Scan
       - name: Run npm audit (Dependency Vulnerability Scan)
         run: npm audit --audit-level=high
 
-      # Static Analysis (SAST) using Semgrep
       - name: Run Semgrep (SAST - Static Analysis)
         uses: returntocorp/semgrep-action@v1
         with:
           config: 'p/default'
 
-      # Dynamic Analysis (DAST) using OWASP ZAP
       - name: Run OWASP ZAP Baseline Scan (DAST - Dynamic Analysis)
         uses: zaproxy/action-baseline@v0.6.0
         with:
           target: 'https://juice-shop.herokuapp.com'
           fail_action: false
 
-      # Upload ZAP HTML Report
       - name: Upload ZAP HTML Report
         uses: actions/upload-artifact@v4
         with:
           name: zap-report
           path: zap-report.html
 
-      # Code linting with ESLint
       - name: Install ESLint
         run: npm install eslint
 
       - name: Run ESLint (Code Quality + Potential Security Issues)
         run: npx eslint . --max-warnings=0
 
-      # Secret Detection using Gitleaks
       - name: Scan for secrets with Gitleaks
         uses: gitleaks/gitleaks-action@v2
         with:
           args: detect --source=. --verbose
 
-      # Final Summary
       - name: Summary
         run: echo "✅ SAST, DAST, Dependency Scanning, Linting, and Secrets Detection complete."
